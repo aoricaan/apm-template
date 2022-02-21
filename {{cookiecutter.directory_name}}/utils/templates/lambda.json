@@ -1,0 +1,50 @@
+{
+  "Type": "AWS::Lambda::Function",
+  "Properties": {
+    "Code": "../{{cookiecutter._code}}",
+    "Handler": "{{cookiecutter._handler}}",
+    "Role": {
+      "Fn::GetAtt": [
+        "RolLambda",
+        "Arn"
+      ]
+    },
+    "Runtime": "python3.9",
+    "FunctionName": {
+      "Fn::Sub": "${Environment}-${AppName}-{{cookiecutter._name}}"
+    },
+    "MemorySize": 128,
+    "Timeout": 30,
+    "Environment": {
+      "Variables": {
+        "ENVIRONMENT": {
+          "Ref": "Environment"
+        }
+      }
+    },
+    "VpcConfig": {
+      "SecurityGroupIds": [
+        {
+          "Fn::ImportValue": {
+            "Fn::Sub": "${NetworkStackParameter}-NoIngressSecurityGroup"
+          }
+        }
+      ],
+      "SubnetIds": {
+        "Fn::Split": [
+          ",",
+          {
+            "Fn::ImportValue": {
+              "Fn::Sub": "${NetworkStackParameter}-PrivateSubnets"
+            }
+          }
+        ]
+      }
+    },
+    "Layers": [
+      {
+        "Ref": "LayerCore"
+      }
+    ]
+  }
+}

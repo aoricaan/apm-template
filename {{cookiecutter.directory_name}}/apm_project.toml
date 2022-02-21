@@ -1,0 +1,7 @@
+[tool.apm]
+name = "{{cookiecutter.project_name}}"
+description = ""
+
+[tool.apm.templates]
+lambda_template = ""
+layer_template = ""

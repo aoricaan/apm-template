@@ -1,0 +1,41 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "{{cookiecutter.app_name}}  API",
+      "description": "{{cookiecutter.api_description}}.",
+      "version": "1.0.0"
+    },
+    "host": "{{cookiecutter.api_host}}.",
+    "schemes": [
+      "https"
+    ],
+    "paths": {
+    },
+    "definitions": {
+      "Empty": {
+        "type": "object",
+        "title": "Empty Schema"
+      }
+    },
+    "securityDefinitions": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "x-api-key",
+        "in": "header"
+      }
+    },
+    "x-amazon-apigateway-request-validators": {
+      "Validate query string parameters and headers": {
+        "validateRequestParameters": true,
+        "validateRequestBody": false
+      },
+      "Validate body, query string parameters, and headers": {
+        "validateRequestParameters": true,
+        "validateRequestBody": true
+      },
+      "Validate body": {
+        "validateRequestParameters": false,
+        "validateRequestBody": true
+      }
+    }
+  }
