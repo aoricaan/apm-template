@@ -1,5 +1,5 @@
 [tool.apm]
-name = "{{cookiecutter.project_name}}"
+name = "{{cookiecutter.app_name}}"
 description = ""
 
 [tool.apm.templates]
