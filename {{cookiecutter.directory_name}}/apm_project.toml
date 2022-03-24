@@ -1,7 +1,11 @@
-[tool.apm]
+[apm.project.definition]
 name = "{{cookiecutter.app_name}}"
 description = ""
 
-[tool.apm.templates]
-lambda_template = ""
-layer_template = ""
+[apm.templates.code]
+lambda_template = "utils/templates/lambda.txt"
+lambda_cfn_template = "utils/templates/lambda.json"
+swagger_template = "utils/templates/api_verbs.json"
+
+[apm.deploy]
+project_template = "projectTemplate.json"
