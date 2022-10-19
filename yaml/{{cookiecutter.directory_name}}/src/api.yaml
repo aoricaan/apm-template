@@ -1,0 +1,49 @@
+swagger: '2.0'
+info:
+  title: '{{cookiecutter.project_name}}  API'
+  description: '{{cookiecutter.api_description}}.'
+  version: 1.0.0
+host: '{{cookiecutter.api_host}}.'
+schemes:
+  - https
+paths:
+  /:
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/Empty'
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: '200'
+            responseTemplates:
+              application/json: '{"message":"lending API"}'
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: when_no_match
+        type: mock
+definitions:
+  Empty:
+    type: object
+    title: Empty Schema
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: x-api-key
+    in: header
+x-amazon-apigateway-request-validators:
+  Validate query string parameters and headers:
+    validateRequestParameters: true
+    validateRequestBody: false
+  Validate body, query string parameters, and headers:
+    validateRequestParameters: true
+    validateRequestBody: true
+  Validate body:
+    validateRequestParameters: false
+    validateRequestBody: true

@@ -1,0 +1,142 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ''
+Parameters:
+  AppName:
+    Type: String
+    Description: App Name.
+    Default: '{{cookiecutter.project_name}}'
+  Environment:
+    Type: String
+    Description: Environment name.
+  ArtifactsBucket:
+    Type: String
+    Description: Bucket where all artifacts will be saved.
+    Default: ''
+Resources:
+  RolLambda:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+          PolicyName: !Sub '${Environment}-${AppName}-lambdaLogPermission'
+        - PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:CreateNetworkInterface
+                  - ec2:DeleteNetworkInterface
+                  - ec2:DescribeInstances
+                  - ec2:AttachNetworkInterface
+                Resource: '*'
+          PolicyName: !Sub '${Environment}-${AppName}-lambdaVpcPermission'
+  RolApi:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: '*'
+          PolicyName: !Sub '${Environment}-${AppName}-ApiInvokeLambdaPermission'
+        - PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:DescribeLogGroups
+                  - logs:DescribeLogStreams
+                  - logs:PutLogEvents
+                  - logs:GetLogEvents
+                  - logs:FilterLogEvents
+                Resource: '*'
+          PolicyName: !Sub '${Environment}-${AppName}-ApiLogPermission'
+  Api:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Body: Fn::Transform
+        Name: AWS::Include
+        Parameters:
+          Location: ../src/api.yaml
+      Name: !Sub '${Environment}-${AppName}'
+      Parameters:
+        endpointConfigurationTypes: REGIONAL
+  DeployApi:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref 'Api'
+    DeletionPolicy: Retain
+  StageApi:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref 'Api'
+      DeploymentId: !Ref 'DeployApi'
+      StageName: !Ref 'Environment'
+  UsagePlanApi:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      ApiStages:
+        - ApiId: !Ref 'Api'
+          Stage: !Ref 'StageApi'
+      Description: Custom {{cookiecutter.project_name}} usage plan
+      Quota:
+        Limit: 500
+        Period: MONTH
+      Throttle:
+        BurstLimit: 20
+        RateLimit: 10
+      UsagePlanName: !Sub '${Environment}-${AppName}-Plan'
+  ApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn:
+      - DeployApi
+      - Api
+    Properties:
+      Name: !Sub '${Environment}-${AppName}-ApiKey'
+      Description: CloudFormation API Key V1
+      Enabled: true
+      StageKeys:
+        - RestApiId: !Ref 'Api'
+          StageName: !Ref 'StageApi'
+  UsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId: !Ref 'ApiKey'
+      KeyType: API_KEY
+      UsagePlanId: !Ref 'UsagePlanApi'
+  LayerCore:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.9
+      Content: ../src/layers/core
+      LayerName: !Sub '${Environment}-${AppName}-core'

@@ -1,0 +1,14 @@
+Type: AWS::Lambda::Function
+Properties:
+  Code: ../{{cookiecutter._code}}
+  Handler: '{{cookiecutter._handler}}'
+  Role: !GetAtt 'RolLambda.Arn'
+  Runtime: python3.9
+  FunctionName: !Sub '${Environment}-${AppName}-{{cookiecutter._name}}'
+  MemorySize: 128
+  Timeout: 30
+  Environment:
+    Variables:
+      ENVIRONMENT: !Ref 'Environment'
+  Layers:
+    - !Ref 'LayerCore'
