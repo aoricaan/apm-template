@@ -1,6 +1,6 @@
 {
     "directory_name":  "",
-    "app_name": "{{ cookiecutter.directory_name.lower().replace(' ', '').replace('-', '').replace('_', '') }}",
+    "project_name": "{{ cookiecutter.directory_name.lower().replace(' ', '').replace('-', '').replace('_', '') }}",
     "repository": "{{ cookiecutter.directory_name }}",
     "develop_branch": "master",
     "api_description": "API description",

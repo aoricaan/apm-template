@@ -5,7 +5,7 @@
     "AppName": {
       "Type": "String",
       "Description": "App Name.",
-      "Default": "{{cookiecutter.app_name}}"
+      "Default": "{{cookiecutter.project_name}}"
     },
     "Environment": {
       "Type": "String",
@@ -198,7 +198,7 @@
             }
           }
         ],
-        "Description": "Custom {{cookiecutter.app_name}} usage plan",
+        "Description": "Custom {{cookiecutter.project_name}} usage plan",
         "Quota": {
           "Limit": 5000,
           "Period": "MONTH"

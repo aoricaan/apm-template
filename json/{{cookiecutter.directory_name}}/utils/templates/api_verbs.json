@@ -57,7 +57,7 @@
       },
       "credentials": {
         "Fn::GetAtt": [
-          "ROL{{cookiecutter.app_name}}Api",
+          "ROL{{cookiecutter.project_name}}Api",
           "Arn"
         ]
       },
