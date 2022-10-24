@@ -6,8 +6,7 @@
     "api_description": "API description",
     "api_host": "api.example.com",
     "environment": "dev",
-    "_lambdaName": "{{lambdaName}}",
-    "_code": "{{code}}",
-    "_handler": "{{handler}}",
-    "_name": "{{name}}"
+    "_lambda_name": "{{cookiecutter.lambda_name}}",
+    "_memory_size": "{{cookiecutter.memory_size}}",
+    "_timeout": "{{cookiecutter.timeout}}"
 }
