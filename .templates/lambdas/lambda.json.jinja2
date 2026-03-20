@@ -1,0 +1,13 @@
+{
+  "Type": "AWS::Serverless::Function",
+  "Properties": {
+    "FunctionName": {"Fn::Sub": "${Environment}-{{ lambda_name }}"},
+    "CodeUri": "{{ code_uri }}",
+    "Handler": "{{ handler_path }}",
+    "Runtime": "python3.10",
+    "Role": {"Fn::Sub": "${RoleServiceArn}"},
+    "MemorySize": 128,
+    "Timeout": 15,
+    "Events": {}
+  }
+}
