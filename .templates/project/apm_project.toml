@@ -1,0 +1,11 @@
+[apm.project.definition]
+name = "test"
+description = ""
+
+[apm.templates.deploy]
+project_template = "templates/projectTemplate.yaml"
+api_swagger_template = "src/api.yaml"
+
+[apm.project.folders]
+lambdas = "src/lambdas"
+layers = "src/layers"
